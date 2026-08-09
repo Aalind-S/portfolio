@@ -311,7 +311,7 @@ import { SITE_METADATA, RESUME_GDRIVE_LINK } from '../constants';
 
 <!-- Theme, Accent, and Menu Toggle Event Logic -->
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('astro:page-load', () => {
     // 1. Dark/Light Theme Switching
     const themeBtn = document.getElementById('theme-switcher-btn');
     if (themeBtn) {

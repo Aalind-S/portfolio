@@ -12,7 +12,6 @@ export const SITE_METADATA = {
   location: "Noida, India",
   github: "https://github.com/Aalind-S",
   linkedin: "https://linkedin.com/in/-aalind-singh/",
-  twitter: "https://twitter.com/aalind_singh", // Can keep or toggle off in UI
 };
 
 // Google Drive link to resume (direct download format)

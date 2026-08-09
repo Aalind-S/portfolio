@@ -5,16 +5,23 @@
 ---
 <script is:inline>
   (function () {
-    try {
-      const savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      
-      const savedAccent = localStorage.getItem('portfolio-accent') || 'violet';
-      document.documentElement.setAttribute('data-accent', savedAccent);
-    } catch (e) {
-      // Fallback if localStorage is disabled
-      document.documentElement.setAttribute('data-theme', 'dark');
-      document.documentElement.setAttribute('data-accent', 'violet');
-    }
+    const applyTheme = () => {
+      try {
+        const savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        const savedAccent = localStorage.getItem('portfolio-accent') || 'violet';
+        document.documentElement.setAttribute('data-accent', savedAccent);
+      } catch (e) {
+        // Fallback if localStorage is disabled
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.setAttribute('data-accent', 'violet');
+      }
+    };
+
+    applyTheme();
+
+    // Restores attributes on the <html> tag after Astro swaps page DOM
+    document.addEventListener('astro:after-swap', applyTheme);
   })();
 </script>

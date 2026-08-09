@@ -780,6 +780,8 @@ const featuredProjects = PROJECTS.filter(p => p.featured);
   let isDeleting = false;
   const targetElement = document.getElementById('typewriter-text');
 
+  let typewriterTimeout: number | undefined;
+
   function typeEffect() {
     if (!targetElement) return;
 
@@ -805,52 +807,63 @@ const featuredProjects = PROJECTS.filter(p => p.featured);
       speed = 400; // Small pause before writing next word
     }
 
-    setTimeout(typeEffect, speed);
+    typewriterTimeout = window.setTimeout(typeEffect, speed);
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    typeEffect();
-  });
-
-  // 2. Client-Side mailto: Contact Form Handler
-  const contactForm = document.getElementById('contact-form') as HTMLFormElement;
-  const formFeedback = document.getElementById('form-feedback');
-
-  if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const nameInput = document.getElementById('contact-name') as HTMLInputElement;
-      const emailInput = document.getElementById('contact-email') as HTMLInputElement;
-      const subjectInput = document.getElementById('contact-subject') as HTMLInputElement;
-      const messageInput = document.getElementById('contact-message') as HTMLInputElement;
-      
-      if (!nameInput || !emailInput || !subjectInput || !messageInput) return;
-
-      const name = nameInput.value;
-      const email = emailInput.value;
-      const subject = subjectInput.value;
-      const message = messageInput.value;
-      const recipientEmail = contactForm.dataset.email || 'singhalind2000@gmail.com';
-
-      // Build standard mailto URL
-      const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi Aalind,\n\nMy name is ${name} (${email}).\n\nMessage:\n${message}`)}`;
-      
-      // Redirect to open the default email client
-      window.location.href = mailtoUrl;
-
-      // Show toast notification
-      if (formFeedback) {
-        formFeedback.textContent = 'Opening your email client...';
-        formFeedback.className = 'form-feedback-toast success';
-        formFeedback.style.display = 'block';
-        contactForm.reset();
-        
-        // Hide toast after 4 seconds
-        setTimeout(() => {
-          formFeedback.style.display = 'none';
-        }, 4000);
+  // Run on page loads/transitions
+  document.addEventListener('astro:page-load', () => {
+    // Reset and start typewriter animation if target exists
+    const textEl = document.getElementById('typewriter-text');
+    if (textEl) {
+      if (typewriterTimeout) {
+        window.clearTimeout(typewriterTimeout);
       }
-    });
-  }
+      wordIndex = 0;
+      charIndex = 0;
+      isDeleting = false;
+      typeEffect();
+    }
+
+    // Client-Side mailto: Contact Form Handler
+    const contactForm = document.getElementById('contact-form') as HTMLFormElement;
+    const formFeedback = document.getElementById('form-feedback');
+
+    if (contactForm) {
+      contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const nameInput = document.getElementById('contact-name') as HTMLInputElement;
+        const emailInput = document.getElementById('contact-email') as HTMLInputElement;
+        const subjectInput = document.getElementById('contact-subject') as HTMLInputElement;
+        const messageInput = document.getElementById('contact-message') as HTMLInputElement;
+        
+        if (!nameInput || !emailInput || !subjectInput || !messageInput) return;
+
+        const name = nameInput.value;
+        const email = emailInput.value;
+        const subject = subjectInput.value;
+        const message = messageInput.value;
+        const recipientEmail = contactForm.dataset.email || 'singhalind2000@gmail.com';
+
+        // Build standard mailto URL
+        const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi Aalind,\n\nMy name is ${name} (${email}).\n\nMessage:\n${message}`)}`;
+        
+        // Redirect to open the default email client
+        window.location.href = mailtoUrl;
+
+        // Show toast notification
+        if (formFeedback) {
+          formFeedback.textContent = 'Opening your email client...';
+          formFeedback.className = 'form-feedback-toast success';
+          formFeedback.style.display = 'block';
+          contactForm.reset();
+          
+          // Hide toast after 4 seconds
+          setTimeout(() => {
+            formFeedback.style.display = 'none';
+          }, 4000);
+        }
+      });
+    }
+  });
 </script>
