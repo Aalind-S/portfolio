@@ -1,0 +1,427 @@
+---
+// blog/index.astro
+// Blog listings page with live search and tag filtering.
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const allBlogs = await getCollection('blog');
+// Sort by publication date (newest first)
+const sortedBlogs = allBlogs.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Extract all unique tags
+const allTags = Array.from(
+  new Set(sortedBlogs.flatMap((blog) => blog.data.tags))
+).sort();
+---
+
+<Layout title="Solutions Blog | Aalind Singh" description="Blogs detailing how I debugged and resolved software development, Cloudflare, and performance problems.">
+  <section class="blog-list-section section">
+    <div class="container">
+      <header class="blog-list-header animate-on-scroll">
+        <h1 class="section-title">Solutions Blog</h1>
+        <p class="section-subtitle">A collection of write-ups explaining how I diagnosed and solved specific technical problems.</p>
+      </header>
+
+      <!-- Interactive Filters (Search & Tags) -->
+      <div class="blog-filters glass-panel animate-on-scroll no-print">
+        <!-- Text Search -->
+        <div class="search-input-wrapper">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="blog-search-bar" placeholder="Search by title, description, or topic..." aria-label="Search blogs" />
+          <button id="btn-clear-search" style="display: none;" aria-label="Clear Search">&times;</button>
+        </div>
+
+        <!-- Tag Toggles -->
+        <div class="tags-selector">
+          <button class="filter-tag-btn active" data-tag="all">All Topics</button>
+          {allTags.map((tag) => (
+            <button class="filter-tag-btn" data-tag={tag}>#{tag}</button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Articles Grid -->
+      <div class="blog-grid animate-on-scroll" id="blogs-listings-container">
+        {sortedBlogs.map((blog) => (
+          <article 
+            class="blog-card glass-panel glow-card" 
+            data-title={blog.data.title.toLowerCase()}
+            data-desc={blog.data.description.toLowerCase()}
+            data-tags={blog.data.tags.join(',').toLowerCase()}
+            id={`blog-card-${blog.id}`}
+          >
+            <div class="blog-card-header">
+              <time datetime={blog.data.pubDate.toISOString()}>
+                {new Date(blog.data.pubDate).toLocaleDateString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
+              </time>
+              <span class="read-duration">{blog.data.readTime}</span>
+            </div>
+            
+            <div class="blog-card-body">
+              <h2 class="blog-card-title">{blog.data.title}</h2>
+              <p class="blog-card-description">{blog.data.description}</p>
+            </div>
+            
+            <div class="blog-card-footer">
+              <div class="blog-card-tags">
+                {blog.data.tags.map((tag) => (
+                  <span class="card-tag">#{tag}</span>
+                ))}
+              </div>
+              <a href={`/blog/${blog.id}`} class="read-more-btn" id={`btn-read-${blog.id}`}>
+                Read Solution
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <!-- Empty/No Results Fallback -->
+      <div class="no-results-state glass-panel" id="no-results-feedback" style="display: none;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          <line x1="8" y1="11" x2="14" y2="11"></line>
+        </svg>
+        <h3>No matching solutions found</h3>
+        <p>Try refining your search query or choosing another topic filter.</p>
+        <button class="btn btn-secondary btn-sm" id="btn-reset-filters">Reset Filters</button>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .blog-list-section {
+    padding-top: 3rem;
+  }
+
+  .blog-list-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+  }
+
+  /* Filters panel CSS */
+  .blog-filters {
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    border-color: var(--border-color);
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1.25rem;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  #blog-search-bar {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: 0.85rem 1rem 0.85rem 3rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: all var(--transition-fast);
+  }
+
+  #blog-search-bar:focus {
+    border-color: var(--theme-accent);
+    box-shadow: 0 0 0 2px rgba(var(--theme-accent-rgb), 0.15);
+    background: var(--bg-tertiary);
+  }
+
+  #btn-clear-search {
+    position: absolute;
+    right: 1.25rem;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #btn-clear-search:hover {
+    color: var(--text-primary);
+  }
+
+  .tags-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .filter-tag-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 0.4rem 1rem;
+    border-radius: var(--border-radius-full);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .filter-tag-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--border-color-hover);
+  }
+
+  .filter-tag-btn.active {
+    background: var(--theme-accent);
+    color: #ffffff;
+    border-color: var(--theme-accent);
+  }
+
+  /* Grid details */
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  .blog-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2.25rem;
+    height: 100%;
+    transition: transform var(--transition-normal);
+  }
+
+  .blog-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .blog-card-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .blog-card-body {
+    flex: 1;
+    margin-bottom: 1.5rem;
+  }
+
+  .blog-card-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    transition: color var(--transition-fast);
+  }
+
+  .blog-card:hover .blog-card-title {
+    color: var(--theme-accent);
+  }
+
+  .blog-card-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .blog-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .blog-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .card-tag {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  .read-more-btn {
+    font-weight: 600;
+    color: var(--theme-accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    transition: gap var(--transition-fast);
+  }
+
+  .blog-card:hover .read-more-btn {
+    gap: 0.55rem;
+  }
+
+  /* Empty State styling */
+  .no-results-state {
+    padding: 4rem 2rem;
+    text-align: center;
+    max-width: 500px;
+    margin: 2rem auto;
+    border-color: var(--border-color);
+  }
+
+  .no-results-state svg {
+    margin-bottom: 1.5rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .no-results-state h3 {
+    font-size: 1.35rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .no-results-state p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Mobile responsiveness rules */
+  @media (max-width: 600px) {
+    .blog-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<!-- Client Filtering and Search Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchBar = document.getElementById('blog-search-bar') as HTMLInputElement;
+    const clearSearchBtn = document.getElementById('btn-clear-search');
+    const filterTagBtns = document.querySelectorAll('.filter-tag-btn');
+    const blogCards = document.querySelectorAll('.blog-card');
+    const noResultsState = document.getElementById('no-results-feedback');
+    const resetFiltersBtn = document.getElementById('btn-reset-filters');
+    const listingsContainer = document.getElementById('blogs-listings-container');
+
+    let currentSearchQuery = '';
+    let currentSelectedTag = 'all';
+
+    function filterBlogs() {
+      let visibleCount = 0;
+
+      blogCards.forEach((cardNode) => {
+        const card = cardNode as HTMLElement;
+        const title = card.getAttribute('data-title') || '';
+        const desc = card.getAttribute('data-desc') || '';
+        const tags = card.getAttribute('data-tags') || '';
+
+        // Match search query
+        const matchesSearch = title.includes(currentSearchQuery) || 
+                              desc.includes(currentSearchQuery) || 
+                              tags.includes(currentSearchQuery);
+
+        // Match tag selection
+        const matchesTag = currentSelectedTag === 'all' || tags.split(',').includes(currentSelectedTag);
+
+        if (matchesSearch && matchesTag) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Handle empty state visual feedback
+      if (visibleCount === 0) {
+        if (noResultsState) noResultsState.style.display = 'block';
+        if (listingsContainer) listingsContainer.style.display = 'none';
+      } else {
+        if (noResultsState) noResultsState.style.display = 'none';
+        if (listingsContainer) listingsContainer.style.display = 'grid';
+      }
+    }
+
+    // 1. Search Bar listener
+    if (searchBar) {
+      searchBar.addEventListener('input', (e) => {
+        currentSearchQuery = (e.target as HTMLInputElement).value.toLowerCase().trim();
+        
+        if (clearSearchBtn) {
+          clearSearchBtn.style.display = currentSearchQuery.length > 0 ? 'flex' : 'none';
+        }
+        
+        filterBlogs();
+      });
+    }
+
+    // 2. Clear Search listener
+    if (clearSearchBtn && searchBar) {
+      clearSearchBtn.addEventListener('click', () => {
+        searchBar.value = '';
+        currentSearchQuery = '';
+        clearSearchBtn.style.display = 'none';
+        filterBlogs();
+      });
+    }
+
+    // 3. Tag Button listener
+    filterTagBtns.forEach((btnNode) => {
+      const btn = btnNode as HTMLButtonElement;
+      btn.addEventListener('click', () => {
+        // Update active class
+        filterTagBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Extract selected tag
+        currentSelectedTag = btn.getAttribute('data-tag') || 'all';
+        filterBlogs();
+      });
+    });
+
+    // 4. Reset Filters listener
+    if (resetFiltersBtn && searchBar) {
+      resetFiltersBtn.addEventListener('click', () => {
+        searchBar.value = '';
+        currentSearchQuery = '';
+        if (clearSearchBtn) clearSearchBtn.style.display = 'none';
+
+        filterTagBtns.forEach(b => b.classList.remove('active'));
+        const allBtn = document.querySelector('.filter-tag-btn[data-tag="all"]');
+        if (allBtn) allBtn.classList.add('active');
+
+        currentSelectedTag = 'all';
+        filterBlogs();
+      });
+    }
+  });
+</script>

@@ -1,0 +1,156 @@
+---
+// Footer.astro
+// Premium footer with social buttons and scroll-to-top handler.
+import { SITE_METADATA } from '../constants';
+---
+
+<footer class="footer-root no-print">
+  <div class="container footer-container">
+    <!-- Brand / Copy -->
+    <div class="footer-info">
+      <p class="copyright">&copy; {new Date().getFullYear()} {SITE_METADATA.author}. All rights reserved.</p>
+      <p class="tagline">Built with Astro and hosted on Cloudflare Pages</p>
+    </div>
+
+    <!-- Social Media Links -->
+    <div class="footer-socials">
+      <a href={SITE_METADATA.github} target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="GitHub" id="footer-github-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+        </svg>
+      </a>
+      <a href={SITE_METADATA.linkedin} target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="LinkedIn" id="footer-linkedin-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+          <rect x="2" y="9" width="4" height="12"></rect>
+          <circle cx="4" cy="4" r="2"></circle>
+        </svg>
+      </a>
+      <a href={SITE_METADATA.twitter} target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="Twitter / X" id="footer-twitter-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+        </svg>
+      </a>
+      <a href={`mailto:${SITE_METADATA.email}`} class="social-icon-btn" aria-label="Email" id="footer-email-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Scroll To Top Action -->
+    <button class="scroll-top-btn" id="btn-scroll-to-top" aria-label="Scroll to top" title="Scroll to top">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="19" x2="12" y2="5"></line>
+        <polyline points="5 12 12 5 19 12"></polyline>
+      </svg>
+    </button>
+  </div>
+</footer>
+
+<style>
+  .footer-root {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: 3rem 0;
+    margin-top: auto;
+    transition: background-color var(--transition-normal);
+  }
+
+  .footer-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 2rem;
+    position: relative;
+  }
+
+  .footer-info {
+    flex: 1;
+    min-width: 250px;
+  }
+
+  .copyright {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .tagline {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  .footer-socials {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .social-icon-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+  }
+
+  .social-icon-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--theme-accent);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(var(--theme-accent-rgb), var(--glow-intensity));
+  }
+
+  .scroll-top-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+  }
+
+  .scroll-top-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--theme-accent);
+    background: var(--bg-tertiary);
+    transform: translateY(-3px);
+  }
+
+  @media (max-width: 600px) {
+    .footer-container {
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+    }
+  }
+</style>
+
+<!-- Scroll to Top Behavior -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const scrollTopBtn = document.getElementById('btn-scroll-to-top');
+    if (scrollTopBtn) {
+      scrollTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    }
+  });
+</script>

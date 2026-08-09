@@ -1,0 +1,98 @@
+---
+// Layout.astro
+// Global page wrapper with shared components and core styling.
+import '../styles/global.css';
+import ThemeScript from '../components/ThemeScript.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_METADATA } from '../constants';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = SITE_METADATA.title, 
+  description = SITE_METADATA.description 
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Favicon Links -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- SEO Optimization -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE_METADATA.author} />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    
+    <!-- Theme & Color Accent Script (Synchronous to prevent flashes) -->
+    <ThemeScript />
+  </head>
+  <body>
+    <!-- Navbar Component -->
+    <Navbar />
+    
+    <!-- Main Content Container -->
+    <main style="flex: 1; padding-top: 80px;">
+      <slot />
+    </main>
+    
+    <!-- Footer Component -->
+    <Footer />
+    
+    <!-- Scroll Animations and Global Interactive Scripts -->
+    <script>
+      // Header Scroll Effect
+      const header = document.getElementById('main-header');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          header?.classList.add('scrolled');
+        } else {
+          header?.classList.remove('scrolled');
+        }
+      });
+
+      // Intersection Observer for scroll animations
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15,
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('appear');
+            // Stop observing once animated
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      // Select elements to animate on scroll
+      document.addEventListener('DOMContentLoaded', () => {
+        const animElements = document.querySelectorAll('.animate-on-scroll');
+        animElements.forEach((el) => observer.observe(el));
+      });
+      
+      // Re-query on client-side routing if Astro transitions were used (not used here but good practice)
+      document.addEventListener('astro:page-load', () => {
+        const animElements = document.querySelectorAll('.animate-on-scroll');
+        animElements.forEach((el) => observer.observe(el));
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,875 @@
+---
+// index.astro
+// Home landing page with Hero, About/Skills, Projects, Latest Blogs, and Contact.
+import Layout from '../layouts/Layout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { SITE_METADATA, PROJECTS, SKILLS, RESUME_GDRIVE_LINK } from '../constants';
+import { getCollection } from 'astro:content';
+
+// Query recent blog posts (sorted by publication date desc)
+const allBlogs = await getCollection('blog');
+const recentBlogs = allBlogs
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3); // Get latest 3 posts
+
+const featuredProjects = PROJECTS.filter(p => p.featured);
+---
+
+<Layout>
+  <!-- Hero Section -->
+  <section class="hero-section section" id="home">
+    <div class="container hero-container animate-on-scroll">
+      <div class="hero-content">
+        <span class="hero-greeting text-gradient">Hello World, I'm</span>
+        <h1 class="hero-name">{SITE_METADATA.author}</h1>
+        <h2 class="hero-title">
+          I build <span id="typewriter-text" class="text-gradient"></span><span class="typewriter-cursor">|</span>
+        </h2>
+        <p class="hero-description">
+          A software engineer specializing in building high-performance serverless backends, edge-native microservices, and slick, responsive user interfaces.
+        </p>
+        
+        <div class="hero-cta">
+          <a href="#projects" class="btn btn-primary" id="btn-hero-projects">
+            Explore Work
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+          <a href={RESUME_GDRIVE_LINK} target="_blank" rel="noopener noreferrer" class="btn btn-secondary" id="btn-hero-resume" title="Download CV from Google Drive">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download Resume
+          </a>
+        </div>
+      </div>
+      
+      <!-- Visual Decorative Illustration -->
+      <div class="hero-visual">
+        <div class="glowing-shape-bg pulse-glow"></div>
+        <div class="terminal-mockup glass-panel">
+          <div class="terminal-header">
+            <span class="terminal-dot red"></span>
+            <span class="terminal-dot yellow"></span>
+            <span class="terminal-dot green"></span>
+            <span class="terminal-title">bash</span>
+          </div>
+          <div class="terminal-body">
+            <p class="terminal-line"><span class="term-prompt">~</span> node --version</p>
+            <p class="term-out">v24.19.0</p>
+            <p class="terminal-line"><span class="term-prompt">~</span> cat developer.json</p>
+            <p class="term-out">{`{
+  "name": "Aalind Singh",
+  "focus": ["Distributed Systems", "Edge Computing"],
+  "likes": ["Fast Code", "Aesthetics", "Vanilla CSS"]
+}`}</p>
+            <p class="terminal-line"><span class="term-prompt">~</span> <span class="term-cursor"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About & Skills Section -->
+  <section class="section section-secondary" id="about">
+    <div class="container animate-on-scroll">
+      <h2 class="section-title">About Me</h2>
+      <p class="section-subtitle">A brief overview of my engineering philosophy and technical competencies.</p>
+      
+      <div class="about-grid">
+        <!-- Bio text -->
+        <div class="about-bio glass-panel">
+          <h3>My Background</h3>
+          <p>
+            I am a passionate software engineer focused on developing systems that are robust, highly performant, and visual. I leverage edge frameworks and serverless execution models to architect cost-effective platforms with zero latency compromises.
+          </p>
+          <p>
+            When tackling programming obstacles, I lean towards deep-dive investigation (using logs, profiles, and performance audits) rather than simple hotfixes. I document my discoveries and troubleshooting techniques in my <a href="/blog">personal blog</a>.
+          </p>
+          <p>
+            I'm always eager to learn new technologies and apply systems-level optimization patterns to solve business logic challenges.
+          </p>
+        </div>
+
+        <!-- Skills Card -->
+        <div class="about-skills glass-panel">
+          <h3>Core Technical Stack</h3>
+          
+          <div class="skill-category">
+            <h4>Technical Skills</h4>
+            <div class="skill-tags">
+              {SKILLS.languages.map((lang) => (
+                <span class="skill-tag">{lang}</span>
+              ))}
+            </div>
+          </div>
+
+          <div class="skill-category">
+            <h4>Libraries & Frameworks</h4>
+            <div class="skill-tags">
+              {SKILLS.libraries.map((lib) => (
+                <span class="skill-tag">{lib}</span>
+              ))}
+            </div>
+          </div>
+
+          <div class="skill-category">
+            <h4>Databases & Cloud</h4>
+            <div class="skill-tags">
+              {SKILLS.databases.map((db) => (
+                <span class="skill-tag">{db}</span>
+              ))}
+            </div>
+          </div>
+
+          <div class="skill-category">
+            <h4>Tools & OS</h4>
+            <div class="skill-tags">
+              {SKILLS.tools.map((t) => (
+                <span class="skill-tag">{t}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section class="section" id="projects">
+    <div class="container animate-on-scroll">
+      <h2 class="section-title">Featured Projects</h2>
+      <p class="section-subtitle">A curated selection of core tools and services I've developed.</p>
+      
+      <div class="projects-grid">
+        {featuredProjects.map((project) => (
+          <div class="project-wrapper">
+            <ProjectCard project={project} />
+          </div>
+        ))}
+      </div>
+
+      <div class="view-all-container">
+        <a href="https://github.com/Aalind-S" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" id="btn-view-all-projects">
+          View GitHub Repository
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Blogs Section -->
+  <section class="section section-secondary" id="blogs">
+    <div class="container animate-on-scroll">
+      <h2 class="section-title">Latest Solutions</h2>
+      <p class="section-subtitle">Writing about challenging bugs, systems design, and performance optimizations.</p>
+      
+      <div class="blogs-list-grid">
+        {recentBlogs.map((blog) => (
+          <a href={`/blog/${blog.id}`} class="blog-preview-card glass-panel glow-card" id={`blog-card-${blog.id}`}>
+            <div class="blog-preview-header">
+              <span class="blog-preview-date">
+                {new Date(blog.data.pubDate).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
+              </span>
+              <span class="blog-preview-read">{blog.data.readTime}</span>
+            </div>
+            <h3 class="blog-preview-title">{blog.data.title}</h3>
+            <p class="blog-preview-description">{blog.data.description}</p>
+            <span class="blog-preview-link-text">
+              Read Solution
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </span>
+          </a>
+        ))}
+      </div>
+
+      <div class="view-all-container">
+        <a href="/blog" class="btn btn-primary" id="btn-view-all-blogs">
+          Browse All Blogs
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Form Section -->
+  <section class="section" id="contact">
+    <div class="container animate-on-scroll">
+      <h2 class="section-title">Get In Touch</h2>
+      <p class="section-subtitle">Have an interesting project proposal or engineering question? Drop a message!</p>
+      
+      <div class="contact-grid">
+        <!-- Direct contact details -->
+        <div class="contact-details glass-panel">
+          <h3>Contact Details</h3>
+          <p class="contact-desc">
+            Feel free to email me directly or reach out on social networks. I'll get back to you within 24 hours.
+          </p>
+          
+          <div class="contact-info-list">
+            <div class="info-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--theme-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span>{SITE_METADATA.email}</span>
+            </div>
+            <div class="info-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--theme-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span>San Francisco, CA (Open to Remote)</span>
+            </div>
+          </div>
+          
+          <div class="cv-banner glass-panel">
+            <h4>Need a printer-friendly offline resume?</h4>
+            <p>You can compile a PDF version of my timeline instantly on the interactive resume page.</p>
+            <a href="/resume" class="btn btn-secondary btn-sm" id="contact-btn-view-resume">View Resume Page</a>
+          </div>
+        </div>
+
+        <!-- Submission Form -->
+        <div class="contact-form-card glass-panel">
+          <form id="contact-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="contact-name">Name</label>
+                <input type="text" id="contact-name" name="name" required placeholder="John Doe" />
+              </div>
+              <div class="form-group">
+                <label for="contact-email">Email</label>
+                <input type="email" id="contact-email" name="email" required placeholder="john@example.com" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="contact-subject">Subject</label>
+              <input type="text" id="contact-subject" name="subject" required placeholder="Collaboration Proposal" />
+            </div>
+            <div class="form-group">
+              <label for="contact-message">Message</label>
+              <textarea id="contact-message" name="message" rows="5" required placeholder="Tell me about your project..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="btn-submit-contact-form">
+              <span id="submit-text">Send Message</span>
+              <span id="submit-spinner" class="spinner" style="display: none;"></span>
+            </button>
+            
+            <div id="form-feedback" class="form-feedback-toast" style="display: none;"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Hero Styles */
+  .hero-section {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    padding: 4rem 0;
+  }
+
+  .hero-container {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .hero-greeting {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+  }
+
+  .hero-name {
+    font-size: 4.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+  }
+
+  .typewriter-cursor {
+    color: var(--theme-accent);
+    animation: blink-caret 0.75s step-end infinite;
+    font-weight: 400;
+    margin-left: 2px;
+  }
+
+  @keyframes blink-caret {
+    from, to { color: transparent }
+    50% { color: var(--theme-accent) }
+  }
+
+  .hero-description {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    max-width: 550px;
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  /* Hero Visual Mockup */
+  .hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .glowing-shape-bg {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(var(--theme-accent-rgb), 0.3) 0%, transparent 70%);
+    filter: blur(20px);
+    z-index: -1;
+    border-radius: 50%;
+  }
+
+  .terminal-mockup {
+    width: 100%;
+    max-width: 440px;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    background: rgba(17, 24, 39, 0.85); /* Fixed dark console feel */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  html[data-theme="light"] .terminal-mockup {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(15, 23, 42, 0.1);
+  }
+
+  .terminal-header {
+    background: rgba(0, 0, 0, 0.15);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  html[data-theme="light"] .terminal-header {
+    background: rgba(15, 23, 42, 0.05);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+  }
+
+  .terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .terminal-dot.red { background-color: #ef4444; }
+  .terminal-dot.yellow { background-color: #f59e0b; }
+  .terminal-dot.green { background-color: #10b981; }
+
+  .terminal-title {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 0.5rem;
+  }
+
+  .terminal-body {
+    padding: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #e5e7eb; /* Keep console text visible in light theme as well */
+  }
+
+  html[data-theme="light"] .terminal-body {
+    color: #1e293b;
+  }
+
+  .terminal-line {
+    margin-bottom: 0.25rem;
+  }
+
+  .term-prompt {
+    color: var(--theme-accent);
+    font-weight: 700;
+  }
+
+  .term-out {
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    white-space: pre-wrap;
+  }
+
+  html[data-theme="light"] .term-out {
+    color: #64748b;
+  }
+
+  .term-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    background-color: var(--theme-accent);
+    animation: blink-caret 1s infinite;
+    vertical-align: middle;
+  }
+
+  /* About Section Grid Styles */
+  .section-secondary {
+    background: var(--bg-secondary);
+    transition: background-color var(--transition-normal);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+
+  .about-bio, .about-skills {
+    padding: 2.5rem;
+  }
+
+  .about-bio h3, .about-skills h3 {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+  }
+
+  .about-bio p {
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+    line-height: 1.7;
+  }
+
+  .about-bio a {
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .skill-category {
+    margin-bottom: 1.5rem;
+  }
+
+  .skill-category h4 {
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .skill-tag {
+    font-family: var(--font-mono);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all var(--transition-fast);
+  }
+
+  .skill-tag:hover {
+    color: var(--theme-accent);
+    border-color: var(--theme-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--theme-accent-rgb), 0.1);
+  }
+
+  /* Projects Section Grid Styles */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .view-all-container {
+    text-align: center;
+  }
+
+  /* Blog Preview Listing Grid Styles */
+  .blogs-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .blog-preview-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2.5rem;
+    height: 100%;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .blog-preview-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .blog-preview-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    transition: color var(--transition-fast);
+  }
+
+  .blog-preview-card:hover .blog-preview-title {
+    color: var(--theme-accent);
+  }
+
+  .blog-preview-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    flex: 1;
+  }
+
+  .blog-preview-link-text {
+    font-weight: 600;
+    color: var(--theme-accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.95rem;
+    margin-top: auto;
+    transition: gap var(--transition-fast);
+  }
+
+  .blog-preview-card:hover .blog-preview-link-text {
+    gap: 0.6rem;
+  }
+
+  /* Contact Section Grid Styles */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 3rem;
+  }
+
+  .contact-details {
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .contact-details h3 {
+    font-size: 1.6rem;
+    margin-bottom: 1.25rem;
+    color: var(--text-primary);
+  }
+
+  .contact-desc {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .contact-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .cv-banner {
+    padding: 1.5rem;
+    border-radius: var(--border-radius-sm);
+    border-color: rgba(var(--theme-accent-rgb), 0.15);
+  }
+
+  .cv-banner h4 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+
+  .cv-banner p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  /* Contact Form Inputs */
+  .contact-form-card {
+    padding: 3rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .form-group input, .form-group textarea {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: 0.85rem 1rem;
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+    outline: none;
+  }
+
+  .form-group input:focus, .form-group textarea:focus {
+    border-color: var(--theme-accent);
+    box-shadow: 0 0 0 2px rgba(var(--theme-accent-rgb), 0.15);
+    background: var(--bg-tertiary);
+  }
+
+  /* Submit Loading Spinner */
+  .spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #ffffff;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .form-feedback-toast {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .form-feedback-toast.success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+  }
+
+  .form-feedback-toast.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+  }
+
+  /* Mobile layouts adjustments */
+  @media (max-width: 992px) {
+    .hero-container {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      text-align: center;
+    }
+
+    .hero-description {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-cta {
+      justify-content: center;
+    }
+
+    .hero-visual {
+      order: -1; /* Display code visual at the top in mobile layouts */
+    }
+
+    .about-grid, .contact-grid {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero-name {
+      font-size: 3rem;
+    }
+
+    .hero-title {
+      font-size: 1.8rem;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .contact-form-card {
+      padding: 1.5rem;
+    }
+  }
+</style>
+
+<!-- Typewriter animation and interactive form submission logic -->
+<script>
+  // 1. Hero Title Typewriter script
+  const words = ["scalable systems.", "serverless edge layers.", "interactive frontends.", "optimal code."];
+  let wordIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+  const targetElement = document.getElementById('typewriter-text');
+
+  function typeEffect() {
+    if (!targetElement) return;
+
+    const currentWord = words[wordIndex];
+    
+    if (isDeleting) {
+      targetElement.textContent = currentWord.substring(0, charIndex - 1);
+      charIndex--;
+    } else {
+      targetElement.textContent = currentWord.substring(0, charIndex + 1);
+      charIndex++;
+    }
+
+    // Determine speed
+    let speed = isDeleting ? 40 : 80;
+
+    if (!isDeleting && charIndex === currentWord.length) {
+      speed = 1800; // Pause at end of word
+      isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false;
+      wordIndex = (wordIndex + 1) % words.length;
+      speed = 400; // Small pause before writing next word
+    }
+
+    setTimeout(typeEffect, speed);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    typeEffect();
+  });
+
+  // 2. Interactive AJAX Contact Form Submission
+  const contactForm = document.getElementById('contact-form') as HTMLFormElement;
+  const submitText = document.getElementById('submit-text');
+  const submitSpinner = document.getElementById('submit-spinner');
+  const formFeedback = document.getElementById('form-feedback');
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Update UI state to loading
+      if (submitText && submitSpinner && formFeedback) {
+        submitText.style.display = 'none';
+        submitSpinner.style.display = 'inline-block';
+        formFeedback.style.display = 'none';
+        formFeedback.className = 'form-feedback-toast';
+      }
+
+      const formData = new FormData(contactForm);
+      const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        subject: formData.get('subject'),
+        message: formData.get('message')
+      };
+
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json() as any;
+
+        if (response.ok && formFeedback) {
+          formFeedback.textContent = result.message || 'Message sent successfully!';
+          formFeedback.classList.add('success');
+          formFeedback.style.display = 'block';
+          contactForm.reset();
+        } else if (formFeedback) {
+          throw new Error(result.error || 'Failed to submit form. Please try again.');
+        }
+      } catch (err: any) {
+        if (formFeedback) {
+          formFeedback.textContent = err.message || 'Network error. Please try again later.';
+          formFeedback.classList.add('error');
+          formFeedback.style.display = 'block';
+        }
+      } finally {
+        // Restore UI state
+        if (submitText && submitSpinner) {
+          submitText.style.display = 'inline-block';
+          submitSpinner.style.display = 'none';
+        }
+      }
+    });
+  }
+</script>

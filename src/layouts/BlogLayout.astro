@@ -1,0 +1,349 @@
+---
+// BlogLayout.astro
+// Custom layout tailored for rendering markdown blog posts.
+import Layout from './Layout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  readTime: string;
+  tags: string[];
+}
+
+const { title, description, pubDate, readTime, tags } = Astro.props;
+
+const formattedDate = new Date(pubDate).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+---
+
+<Layout title={`${title} | Aalind's Blog`} description={description}>
+  <!-- Scroll Progress Indicator -->
+  <div id="scroll-progress-container">
+    <div id="scroll-progress-bar"></div>
+  </div>
+
+  <article class="blog-article container">
+    <!-- Back to Blogs -->
+    <a href="/blog" class="back-link no-print" id="btn-back-to-blogs">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Back to all blogs
+    </a>
+
+    <!-- Header Block -->
+    <header class="blog-header animate-on-scroll">
+      <div class="blog-meta">
+        <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+        <span class="meta-dot">•</span>
+        <span>{readTime}</span>
+      </div>
+      <h1 class="blog-title">{title}</h1>
+      <p class="blog-desc">{description}</p>
+      
+      <!-- Tags List -->
+      <div class="blog-tags">
+        {tags.map((tag) => (
+          <span class="tag-badge">#{tag}</span>
+        ))}
+      </div>
+    </header>
+
+    <!-- Post Content Container -->
+    <div class="blog-content prose animate-on-scroll">
+      <slot />
+    </div>
+
+    <!-- Share/Action Section -->
+    <footer class="blog-footer no-print animate-on-scroll">
+      <h3>Share this solution</h3>
+      <div class="share-buttons">
+        <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(Astro.url.href)}`} target="_blank" rel="noopener noreferrer" class="share-btn twitter" id="share-twitter">
+          Twitter
+        </a>
+        <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`} target="_blank" rel="noopener noreferrer" class="share-btn linkedin" id="share-linkedin">
+          LinkedIn
+        </a>
+        <button class="share-btn copy-link" id="btn-copy-share-link" data-url={Astro.url.href}>
+          Copy Link
+        </button>
+      </div>
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  #scroll-progress-container {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: transparent;
+    z-index: 99;
+  }
+  
+  #scroll-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--theme-accent);
+    box-shadow: 0 0 8px var(--theme-accent);
+    transition: width 0.1s ease-out;
+  }
+
+  .blog-article {
+    max-width: 800px;
+    padding-top: 2rem;
+    padding-bottom: 6rem;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 2rem;
+    transition: color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .back-link:hover {
+    color: var(--theme-accent);
+    transform: translateX(-4px);
+  }
+
+  .blog-header {
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 2.5rem;
+  }
+
+  .blog-meta {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .blog-title {
+    font-size: 3rem;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .blog-desc {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .blog-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag-badge {
+    background: var(--bg-tertiary);
+    color: var(--theme-accent);
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--border-radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid var(--border-color);
+  }
+
+  /* Prose typography styling for markdown output */
+  .prose {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+  }
+
+  .prose :global(p) {
+    margin-bottom: 1.75rem;
+  }
+
+  .prose :global(h2) {
+    font-size: 1.75rem;
+    margin-top: 3rem;
+    margin-bottom: 1.25rem;
+    color: var(--text-primary);
+  }
+
+  .prose :global(h3) {
+    font-size: 1.4rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  .prose :global(strong) {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .prose :global(ul), .prose :global(ol) {
+    margin-bottom: 1.75rem;
+    padding-left: 1.5rem;
+  }
+
+  .prose :global(ul) {
+    list-style-type: disc;
+  }
+
+  .prose :global(ol) {
+    list-style-type: decimal;
+  }
+
+  .prose :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .prose :global(blockquote) {
+    border-left: 4px solid var(--theme-accent);
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    padding: 1rem 1.5rem;
+    border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+  }
+
+  .prose :global(pre) {
+    background: var(--prism-bg) !important;
+    padding: 1.25rem;
+    border-radius: var(--border-radius-md);
+    overflow-x: auto;
+    margin: 2rem 0;
+    border: 1px solid var(--border-color);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+  }
+
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--bg-tertiary);
+    color: var(--theme-accent);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+  }
+
+  .prose :global(pre code) {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    border: none;
+  }
+
+  /* Footer & sharing styling */
+  .blog-footer {
+    margin-top: 5rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 3rem;
+  }
+
+  .blog-footer h3 {
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+  }
+
+  .share-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .share-btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--border-radius-sm);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+  }
+
+  .share-btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--theme-accent);
+    color: var(--theme-accent);
+  }
+
+  .share-btn.twitter:hover {
+    background: #1da1f2;
+    color: #ffffff;
+    border-color: #1da1f2;
+  }
+
+  .share-btn.linkedin:hover {
+    background: #0077b5;
+    color: #ffffff;
+    border-color: #0077b5;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 768px) {
+    .blog-title {
+      font-size: 2.25rem;
+    }
+    
+    .blog-desc {
+      font-size: 1.1rem;
+    }
+  }
+</style>
+
+<!-- Client Script for Reading Progress and Clipboard Copying -->
+<script>
+  // Reading progress indicator script
+  const progressBar = document.getElementById('scroll-progress-bar');
+  if (progressBar) {
+    window.addEventListener('scroll', () => {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollHeight > 0) {
+        const scrolledPercentage = (window.scrollY / scrollHeight) * 100;
+        progressBar.style.width = scrolledPercentage + '%';
+      }
+    });
+  }
+
+  // Copy share link to clipboard script
+  const copyBtn = document.getElementById('btn-copy-share-link');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const url = copyBtn.getAttribute('data-url');
+      if (url) {
+        navigator.clipboard.writeText(url).then(() => {
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = 'Copied!';
+          copyBtn.style.color = 'var(--theme-accent)';
+          copyBtn.style.borderColor = 'var(--theme-accent)';
+          setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.style.color = '';
+            copyBtn.style.borderColor = '';
+          }, 2000);
+        });
+      }
+    });
+  }
+</script>

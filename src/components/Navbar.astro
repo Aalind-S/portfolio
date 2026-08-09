@@ -1,0 +1,361 @@
+---
+// Navbar.astro
+// Sticky navigation bar with mobile hamburger support, theme switcher, and accent picker.
+import { SITE_METADATA, RESUME_GDRIVE_LINK } from '../constants';
+---
+
+<header class="glass-panel" id="main-header">
+  <div class="container nav-container">
+    <!-- Brand / Logo -->
+    <a href="/" class="nav-brand" id="nav-brand-logo">
+      <span class="logo-accent">&lt;</span>{SITE_METADATA.author}<span class="logo-accent"> /&gt;</span>
+    </a>
+
+    <!-- Navigation Drawer Links -->
+    <nav class="nav-menu" id="nav-menu-links">
+      <a href="/#about" class="nav-link" id="link-nav-about">About</a>
+      <a href="/#projects" class="nav-link" id="link-nav-projects">Projects</a>
+      <a href="/blog" class="nav-link" id="link-nav-blog">Blog</a>
+      <a href="/resume" class="nav-link" id="link-nav-resume">Resume</a>
+      <a href="/#contact" class="nav-link" id="link-nav-contact">Contact</a>
+    </nav>
+
+    <!-- Interactive Toggles (Theme, Accent) -->
+    <div class="nav-actions">
+      <!-- Accent Picker Panel -->
+      <div class="accent-picker-wrapper" title="Select Accent Color">
+        <button class="action-btn" id="btn-accent-picker" aria-label="Choose accent color">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"></path>
+            <path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z"></path>
+          </svg>
+        </button>
+        <div class="accent-dropdown glass-panel" id="accent-dropdown-menu">
+          <button class="accent-btn dot-violet" data-accent="violet" aria-label="Violet Theme"></button>
+          <button class="accent-btn dot-cyan" data-accent="cyan" aria-label="Cyan Theme"></button>
+          <button class="accent-btn dot-emerald" data-accent="emerald" aria-label="Emerald Theme"></button>
+          <button class="accent-btn dot-gold" data-accent="gold" aria-label="Gold Theme"></button>
+        </div>
+      </div>
+
+      <!-- Theme Switcher (Dark to White/Light) -->
+      <button class="action-btn" id="theme-switcher-btn" aria-label="Toggle Theme (Dark / Light)">
+        <!-- Sun Icon (visible in light mode) -->
+        <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <!-- Moon Icon (visible in dark mode) -->
+        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+
+      <!-- Google Drive Resume Link Download -->
+      <a href={RESUME_GDRIVE_LINK} target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm no-print" id="nav-btn-download-resume">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Resume</span>
+      </a>
+
+      <!-- Hamburger mobile toggle -->
+      <button class="hamburger-btn no-print" id="hamburger-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  #main-header {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+  }
+
+  .nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .nav-brand {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+  }
+
+  .logo-accent {
+    color: var(--theme-accent);
+    transition: color var(--transition-fast);
+  }
+
+  .nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .nav-link {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 1rem;
+    position: relative;
+    padding: 0.5rem 0;
+    transition: color var(--transition-fast);
+  }
+
+  .nav-link:hover {
+    color: var(--text-primary);
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--theme-accent);
+    transition: width var(--transition-fast);
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .action-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+  }
+
+  .action-btn:hover {
+    border-color: var(--theme-accent);
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+  }
+
+  .btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border-radius: var(--border-radius-sm);
+    height: 40px;
+  }
+
+  /* Icons display settings */
+  .sun-icon, .moon-icon {
+    display: none;
+  }
+  
+  html[data-theme="dark"] .sun-icon,
+  html:not([data-theme="light"]) .sun-icon {
+    display: block;
+  }
+  
+  html[data-theme="light"] .moon-icon {
+    display: block;
+  }
+
+  /* Accent picker dropdown CSS */
+  .accent-picker-wrapper {
+    position: relative;
+  }
+
+  .accent-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: var(--border-radius-sm);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all var(--transition-fast);
+    z-index: 110;
+    min-width: 50px;
+  }
+
+  .accent-picker-wrapper:hover .accent-dropdown,
+  .accent-picker-wrapper:focus-within .accent-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .accent-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+  }
+
+  .accent-btn:hover {
+    transform: scale(1.15);
+  }
+
+  .dot-violet { background-color: #8b5cf6; }
+  .dot-cyan { background-color: #06b6d4; }
+  .dot-emerald { background-color: #10b981; }
+  .dot-gold { background-color: #f59e0b; }
+
+  /* Apply active outline border on selected accent */
+  html[data-accent="violet"] .dot-violet,
+  html[data-accent="cyan"] .dot-cyan,
+  html[data-accent="emerald"] .dot-emerald,
+  html[data-accent="gold"] .dot-gold {
+    border-color: var(--text-primary);
+  }
+
+  /* Hamburger Menu Styling */
+  .hamburger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 26px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 120;
+  }
+
+  .hamburger-line {
+    width: 100%;
+    height: 2px;
+    background-color: var(--text-primary);
+    transition: all var(--transition-fast);
+  }
+
+  /* Mobile responsiveness rules */
+  @media (max-width: 768px) {
+    .hamburger-btn {
+      display: flex;
+    }
+
+    .nav-menu {
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      background: var(--bg-primary);
+      flex-direction: column;
+      padding: 2rem 0;
+      gap: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform var(--transition-normal), opacity var(--transition-normal);
+      z-index: 99;
+    }
+
+    .nav-menu.open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Mobile Hamburger Active State Transformations */
+    .hamburger-btn.active .hamburger-line:nth-child(1) {
+      transform: translateY(8px) rotate(45deg);
+    }
+    .hamburger-btn.active .hamburger-line:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger-btn.active .hamburger-line:nth-child(3) {
+      transform: translateY(-8px) rotate(-45deg);
+    }
+    
+    #nav-btn-download-resume {
+      display: none; /* Hide in mobile actions bar to make space */
+    }
+  }
+</style>
+
+<!-- Theme, Accent, and Menu Toggle Event Logic -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1. Dark/Light Theme Switching
+    const themeBtn = document.getElementById('theme-switcher-btn');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('portfolio-theme', newTheme);
+      });
+    }
+
+    // 2. Accent Color Picking
+    const accentBtns = document.querySelectorAll('.accent-btn');
+    accentBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const selectedAccent = btn.getAttribute('data-accent');
+        if (selectedAccent) {
+          document.documentElement.setAttribute('data-accent', selectedAccent);
+          localStorage.setItem('portfolio-accent', selectedAccent);
+        }
+      });
+    });
+
+    // 3. Hamburger Mobile Navigation Toggle
+    const menuToggle = document.getElementById('hamburger-menu-toggle');
+    const navMenu = document.getElementById('nav-menu-links');
+    
+    if (menuToggle && navMenu) {
+      menuToggle.addEventListener('click', () => {
+        const isOpen = navMenu.classList.toggle('open');
+        menuToggle.classList.toggle('active');
+        menuToggle.setAttribute('aria-expanded', String(isOpen));
+      });
+
+      // Close menu when links are clicked (useful for anchors on same page)
+      const navLinks = navMenu.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          navMenu.classList.remove('open');
+          menuToggle.classList.remove('active');
+          menuToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+  });
+</script>
