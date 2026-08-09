@@ -229,20 +229,20 @@ const featuredProjects = PROJECTS.filter(p => p.featured);
                 <line x1="2" y1="12" x2="22" y2="12"></line>
                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
               </svg>
-              <span>San Francisco, CA (Open to Remote)</span>
+              <span>{SITE_METADATA.location} (Open to Remote & Relocation)</span>
             </div>
           </div>
           
           <div class="cv-banner glass-panel">
             <h4>Need a printer-friendly offline resume?</h4>
-            <p>You can compile a PDF version of my timeline instantly on the interactive resume page.</p>
+            <p>You can view my interactive resume or download the official PDF version directly.</p>
             <a href="/resume" class="btn btn-secondary btn-sm" id="contact-btn-view-resume">View Resume Page</a>
           </div>
         </div>
 
         <!-- Submission Form -->
         <div class="contact-form-card glass-panel">
-          <form id="contact-form">
+          <form id="contact-form" data-email={SITE_METADATA.email}>
             <div class="form-row">
               <div class="form-group">
                 <label for="contact-name">Name</label>
@@ -812,63 +812,44 @@ const featuredProjects = PROJECTS.filter(p => p.featured);
     typeEffect();
   });
 
-  // 2. Interactive AJAX Contact Form Submission
+  // 2. Client-Side mailto: Contact Form Handler
   const contactForm = document.getElementById('contact-form') as HTMLFormElement;
-  const submitText = document.getElementById('submit-text');
-  const submitSpinner = document.getElementById('submit-spinner');
   const formFeedback = document.getElementById('form-feedback');
 
   if (contactForm) {
-    contactForm.addEventListener('submit', async (e) => {
+    contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
-      // Update UI state to loading
-      if (submitText && submitSpinner && formFeedback) {
-        submitText.style.display = 'none';
-        submitSpinner.style.display = 'inline-block';
-        formFeedback.style.display = 'none';
-        formFeedback.className = 'form-feedback-toast';
-      }
+      const nameInput = document.getElementById('contact-name') as HTMLInputElement;
+      const emailInput = document.getElementById('contact-email') as HTMLInputElement;
+      const subjectInput = document.getElementById('contact-subject') as HTMLInputElement;
+      const messageInput = document.getElementById('contact-message') as HTMLInputElement;
+      
+      if (!nameInput || !emailInput || !subjectInput || !messageInput) return;
 
-      const formData = new FormData(contactForm);
-      const data = {
-        name: formData.get('name'),
-        email: formData.get('email'),
-        subject: formData.get('subject'),
-        message: formData.get('message')
-      };
+      const name = nameInput.value;
+      const email = emailInput.value;
+      const subject = subjectInput.value;
+      const message = messageInput.value;
+      const recipientEmail = contactForm.dataset.email || 'singhalind2000@gmail.com';
 
-      try {
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
+      // Build standard mailto URL
+      const mailtoUrl = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Hi Aalind,\n\nMy name is ${name} (${email}).\n\nMessage:\n${message}`)}`;
+      
+      // Redirect to open the default email client
+      window.location.href = mailtoUrl;
 
-        const result = await response.json() as any;
-
-        if (response.ok && formFeedback) {
-          formFeedback.textContent = result.message || 'Message sent successfully!';
-          formFeedback.classList.add('success');
-          formFeedback.style.display = 'block';
-          contactForm.reset();
-        } else if (formFeedback) {
-          throw new Error(result.error || 'Failed to submit form. Please try again.');
-        }
-      } catch (err: any) {
-        if (formFeedback) {
-          formFeedback.textContent = err.message || 'Network error. Please try again later.';
-          formFeedback.classList.add('error');
-          formFeedback.style.display = 'block';
-        }
-      } finally {
-        // Restore UI state
-        if (submitText && submitSpinner) {
-          submitText.style.display = 'inline-block';
-          submitSpinner.style.display = 'none';
-        }
+      // Show toast notification
+      if (formFeedback) {
+        formFeedback.textContent = 'Opening your email client...';
+        formFeedback.className = 'form-feedback-toast success';
+        formFeedback.style.display = 'block';
+        contactForm.reset();
+        
+        // Hide toast after 4 seconds
+        setTimeout(() => {
+          formFeedback.style.display = 'none';
+        }, 4000);
       }
     });
   }
