@@ -6,6 +6,7 @@ import ThemeScript from '../components/ThemeScript.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_METADATA } from '../constants';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title?: string;
@@ -40,6 +41,9 @@ const {
     
     <!-- Theme & Color Accent Script (Synchronous to prevent flashes) -->
     <ThemeScript />
+    
+    <!-- Client Router for smooth, instant page transitions -->
+    <ClientRouter />
   </head>
   <body>
     <!-- Navbar Component -->

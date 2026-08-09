@@ -37,7 +37,7 @@ const formattedDate = new Date(pubDate).toLocaleDateString('en-US', {
     </a>
 
     <!-- Header Block -->
-    <header class="blog-header animate-on-scroll">
+    <header class="blog-header">
       <div class="blog-meta">
         <time datetime={pubDate.toISOString()}>{formattedDate}</time>
         <span class="meta-dot">•</span>
@@ -55,7 +55,7 @@ const formattedDate = new Date(pubDate).toLocaleDateString('en-US', {
     </header>
 
     <!-- Post Content Container -->
-    <div class="blog-content prose animate-on-scroll">
+    <div class="blog-content prose">
       <slot />
     </div>
 
